@@ -1,0 +1,3 @@
+PWD=/home/czyong/build/tools/mtd-utils/mtd-utils-20090606/mkfs.ubifs/
+mkfs.ubifs.c: In function ‘write_data’:
+mkfs.ubifs.c:1639: warning: implicit declaration of function ‘time’

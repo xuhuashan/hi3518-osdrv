@@ -1,0 +1,2 @@
+PWD=/home/czyong/build/tools/mtd-utils/mtd-utils-20090606/
+make: *** No rule to make target `arm'.  Stop.

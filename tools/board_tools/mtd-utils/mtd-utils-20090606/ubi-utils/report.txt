@@ -1,0 +1,1 @@
+PWD=/home/czyong/build/tools/mtd-utils/mtd-utils-20090606/ubi-utils/
