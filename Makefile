@@ -112,16 +112,13 @@ prepare:
 hiboot: prepare
 	@echo "---------task [1]	build boot"
 	#rm $(OSDRV_DIR)/uboot/u-boot-2010.06 -rf
-	if [ ! -d $(OSDRV_DIR)/uboot/u-boot-2010.06 ]; then \
-	  tar xzf $(OSDRV_DIR)/uboot/u-boot-2010.06.tgz -C $(OSDRV_DIR)/uboot; \
-	  pushd $(OSDRV_DIR)/uboot; \
-	    for p in $$(ls u-boot-*.patch 2>/dev/null); do \
-	      patch -p0 -i $${p}; \
-	    done; \
-	  popd; \
-	  make -C $(OSDRV_DIR)/uboot/u-boot-2010.06 \
-	        ARCH=arm CROSS_COMPILE=$(OSDRV_CROSS)- $(UBOOT_CONFIG); \
-	fi
+	pushd $(OSDRV_DIR)/uboot; \
+	  for p in $$(ls u-boot-*.patch 2>/dev/null); do \
+	    patch -p0 -i $${p}; \
+	  done; \
+	popd; \
+	make -C $(OSDRV_DIR)/uboot/u-boot-2010.06 \
+	      ARCH=arm CROSS_COMPILE=$(OSDRV_CROSS)- $(UBOOT_CONFIG); \
 	pushd $(OSDRV_DIR)/uboot/u-boot-2010.06; \
 	  make ARCH=arm CROSS_COMPILE=$(OSDRV_CROSS)- \
 	        -j $(NR_CPUS) >/dev/null ; \
@@ -143,15 +140,11 @@ hiboot_clean:
 ##########################################################################################
 hikernel: prepare
 	@echo "---------task [2] build kernel"
-	#rm $(OSDRV_DIR)/kernel/linux-3.0.y -rf
-	if [ ! -d $(OSDRV_DIR)/kernel/linux-3.0.y ]; then \
-	  tar xzf $(OSDRV_DIR)/kernel/linux-3.0.y.tgz -C $(OSDRV_DIR)/kernel/; \
-	  pushd $(OSDRV_DIR)/kernel; \
-	    for p in $$(ls linux-*.patch 2>/dev/null); do \
-	      patch -p0 -i $${p}; \
-	    done; \
-	  popd; \
-	fi
+	pushd $(OSDRV_DIR)/kernel; \
+	  for p in $$(ls linux-*.patch 2>/dev/null); do \
+	    patch -p0 -i $${p}; \
+	  done; \
+	popd; \
 	if [ -f $(OSDRV_DIR)/kernel/defconfig ]; then \
 	  KCONFIG_ALLCONFIG=$(OSDRV_DIR)/kernel/defconfig \
 	  make -C $(OSDRV_DIR)/kernel/linux-3.0.y \
