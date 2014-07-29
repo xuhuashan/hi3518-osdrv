@@ -1,0 +1,48 @@
+#!/bin/sh
+
+ipaddr=
+bootp=
+gateway=
+netmask=
+hostname=
+netdev=
+autoconf=
+
+for ipinfo in `cat /proc/cmdline`
+do
+	case "$ipinfo" in
+	ip=*)
+		for var in  ipaddr bootp gateway netmask hostname netdev autoconf
+		do
+			eval read $var
+		done << EOF
+		`echo "$ipinfo" | sed "s/:/\n/g" | sed "s/^[ 	]*$/-/g"`
+EOF
+		ipaddr=`echo "$ipaddr" | cut -d = -f 2`
+		[ x$ipaddr == x ] && ipaddr=x
+		;;
+	esac
+done
+
+[ -z "$ipaddr" ] && exit 0
+
+echo "      IP: $ipaddr"
+echo "   BOOTP: $bootp"
+echo " GATEWAY: $gateway"
+echo " NETMASK: $netmask"
+echo "HOSTNAME: $hostname"
+echo "  NETDEV: $netdev"
+echo "AUTOCONF: $autoconf"
+
+if [ x$ipaddr == x- ] ; then
+	# use DHCP
+	:
+else
+	cmd="ifconfig $netdev $ipaddr"
+	[ x$netmask != x- ] && cmd="$cmd netmask $netmask"
+	eval $cmd
+	[ x$gateway != x- ] && route add default gw $gateway
+fi
+
+ifconfig lo 127.0.0.1
+

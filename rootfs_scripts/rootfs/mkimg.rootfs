@@ -1,0 +1,42 @@
+#!/bin/sh
+#$1: rootfs dir
+#$2: output dir
+#$3: name
+#$4..: types
+
+rootfs_dir=$1
+rootfs_image_prepath=$2/$3
+
+while [ -n "$4" ] 
+do
+	case "$4" in
+	"jffs2")
+		echo "making filesystem image jffs2 ..."
+		mkfs.jffs2 -e 0x20000 -d $rootfs_dir -o $rootfs_image_prepath.jffs2
+		echo "making filesystem image jffs2 for nand ..."
+		mkfs.jffs2 -e 0x20000 -n -d $rootfs_dir -o $rootfs_image_prepath.nand.jffs2
+		;;
+	"cramfs")
+		echo "making filesystem image cramfs ..."
+		mkfs.cramfs $rootfs_dir $rootfs_image_prepath.cramfs
+		;;
+	"yaffs2")
+		echo "making filesystem image yaffs2 ..."
+		mkfs.yaffs2 $rootfs_dir $rootfs_image_prepath.yaffs2 >/dev/null
+		chmod a+r $rootfs_image_prepath.yaffs2
+		;;
+	"cramfs-initrd")
+		echo "making filesystem image cramfs-initrd ..."
+		mkfs.cramfs $rootfs_dir $rootfs_image_prepath.temp
+		mkimage -A arm -T ramdisk -C none -a 0 -e 0 -n "initrd in cramfs" -d $rootfs_image_prepath.temp $rootfs_image_prepath.cramfs.initrd
+		rm $rootfs_dir $rootfs_image_prepath.temp -f
+		;;
+	 "cramfs-initrd-img")
+		echo "making filesystem image cramfs-initrd ..."
+		mkfs.cramfs $rootfs_dir $rootfs_image_prepath.temp
+		mkimage -A arm -T ramdisk -C none -a 0xe1100000 -e 0xe1100000 -n "initrd in cramfs" -d $rootfs_image_prepath.temp $rootfs_image_prepath.cramfs.initrd.img
+		rm $rootfs_dir $rootfs_image_prepath.temp -f
+	esac
+
+	shift
+done

@@ -1,0 +1,42 @@
+#!/bin/sh
+
+mountpoint=
+
+if [ -n "$NFSROOT" ] ; then
+	echo "You are already in nfsroot!" >&2
+	exit 1
+fi
+
+for cmdline in `cat /proc/cmdline`
+do
+	case "$cmdline" in
+	nfsroot=*)
+		mountpoint=`echo "$cmdline" | cut -d = -f 2`
+		;;
+	esac
+done
+
+if [ -z "$mountpoint" ] ; then
+	echo "None of nfsroot found in cmdline."
+	exit 0
+fi
+
+if [ -z "`mount | grep "$mountpoint"`" ] ; then
+	modprobe nfs
+	mount -t nfs -o nolock $mountpoint /nfsroot
+	mount -o bind /dev /nfsroot/dev
+	mount -o bind /proc /nfsroot/proc
+	mount -o bind /sys /nfsroot/sys
+	
+	mkdir -p /nfsroot/orig-rootfs
+	mount -o bind / /nfsroot/orig-rootfs
+fi
+
+echo -n "Mount: "
+mount | grep "$mountpoint "
+
+chroot /nfsroot /usr/bin/env \
+	NFSROOT=$mountpoint \
+	HOME=/root \
+	/bin/sh --login 
+

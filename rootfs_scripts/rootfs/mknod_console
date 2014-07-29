@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if ! [ -a dev/console ] ;
+then
+
+    if [ "$USER" = "root" ]; then
+        MKNOD="mknod"
+    else
+        MKNOD="sudo mknod"
+    fi
+    
+    $MKNOD dev/console c 5 1 
+    $MKNOD dev/ttyAMA0 c 204 64
+    $MKNOD dev/ttyAMA1 c 204 65
+    $MKNOD dev/ttyS000 c 204 64
+
+    if [ $? -ne 0 ] ;
+    then
+        echo "'mknod dev/console c 5 1' failed!"
+        echo "You are not 'root' or you have not sudo privilege."
+    fi
+fi
+

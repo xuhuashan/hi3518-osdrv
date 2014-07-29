@@ -1,0 +1,22 @@
+#! /bin/sh
+
+/bin/mount -a
+
+echo "
+            _ _ _ _ _ _ _ _ _ _ _ _
+            \  _  _   _  _ _ ___
+            / /__/ \ |_/
+           / __   /  -  _ ___
+          / /  / /  / /
+  _ _ _ _/ /  /  \_/  \_ ______
+___________\___\__________________
+"
+for initscript in /etc/init.d/S[0-9][0-9]*
+do
+	if [ -x $initscript ] ;
+	then
+		echo "[RCS]: $initscript"
+		$initscript
+	fi
+done
+
