@@ -301,7 +301,7 @@ $(UIMAGE)-initramfs: hikernel hirootfs_build
 	@echo "---------task [8] build $(UIMAGE)-initramfs"
 	pushd ${OSDRV_DIR}/kernel/linux-3.0.y; \
 	if grep "^CONFIG_BLK_DEV_INITRD=y" .config; then \
-	  sed -i.orig -e "s;^\(CONFIG_INITRAMFS_SOURCE\)=\".*\";\1=\"$(OSDRV_DIR)/pub/${PUB_ROOTFS} $(OSDRV_DIR)/device_table.txt\";" .config; \
+	  sed -i.orig -e "s;^\(CONFIG_INITRAMFS_SOURCE\)=\".*\";\1=\"$(OSDRV_DIR)/pub/${PUB_ROOTFS} $(OSDRV_DIR)/rootfs_scripts/device_table.txt\";" .config; \
 	  if grep "^CONFIG_RD_XZ=y" .config; then comp=XZ; \
 	  elif grep "^CONFIG_RD_LZMA=y" .config; then comp=LZMA; \
 	  elif grep "^CONFIG_RD_BZIP2=y" .config; then comp=BZIP2; \
