@@ -5,3 +5,12 @@ nod /dev/ttyAMA0 0660 0 0 c 204 64
 nod /dev/ttyAMA1 0660 0 0 c 204 65
 nod /dev/ttyS000 0660 0 0 c 204 64
 
+dir /home 0755 0 0
+dir /mnt 0755 0 0
+dir /opt 0755 0 0
+dir /proc 0755 0 0
+dir /root 0750 0 0
+dir /sys 0755 0 0
+dir /tmp 0777 0 0
+dir /var 0755 0 0
+dir /var/run 0755 0 0

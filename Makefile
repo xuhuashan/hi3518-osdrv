@@ -172,9 +172,9 @@ hikernel_clean:
 hirootfs_prepare: prepare
 	@echo "---------task [3] prepare rootfs "
 	rm $(OSDRV_DIR)/pub/$(PUB_ROOTFS)* -rf
+	## rootfs skeleton
 	#tar xzf $(OSDRV_DIR)/rootfs_scripts/rootfs.tgz -C $(OSDRV_DIR)/pub
 	#mv $(OSDRV_DIR)/pub/rootfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS)
-	## rootfs skeleton
 	cp -af $(OSDRV_DIR)/rootfs_scripts/rootfs $(OSDRV_DIR)/pub/${PUB_ROOTFS}
 	## C runtime library
 	tar xzf $(OSDRV_DIR)/toolchain/$(TOOLCHAIN_DIR)/runtime_lib/$(TOOLCHAIN_RUNTIME_LIB)/$(TOOLCHAIN_RUNTIME_LIB_C) -C $(OSDRV_DIR)/pub/$(PUB_ROOTFS)
