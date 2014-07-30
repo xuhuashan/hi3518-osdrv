@@ -1,0 +1,42 @@
+#!/bin/sh
+
+## application partition name
+partname="rootfs"
+## supported partition type list
+parttype="jffs2 squashfs"
+## default mtd device
+mtddev="/dev/mtdblock4"
+## mount point
+appmnt="/apps"
+
+mtdnr=$(grep -E "\"${partname}\"" /proc/mtd \
+      | grep -E -o '^mtd[0-9]{1,2}' \
+      | cut -b 4-)
+
+if [ x"$mtdnr" != "x" ]; then
+  mtddev="/dev/mtdblock${mtdnr}"
+fi
+
+if ! [ -d ${appmnt} ]; then
+  mkdir -p ${appmnt}
+fi
+
+## try to mount the apps partition
+mount_ok=no
+for t in ${parttype}; do
+  if mount -t ${t} ${mtddev} ${appmnt} 2>/dev/null; then
+    mount_ok=yes
+    break
+  fi
+done
+
+if [ x"$mount_ok" != "xyes" ]; then
+  echo "WARN: mount application partition failed." >&2
+  exit 1;
+fi
+
+## run /etc/rc script in this partition
+if [ -x ${appmnt}/etc/rc ]; then
+  ${appmnt}/etc/rc
+fi
+

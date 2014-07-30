@@ -1,4 +1,2 @@
 #!/bin/sh
 
-nfsroot
-
