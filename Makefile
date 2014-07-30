@@ -194,9 +194,10 @@ hibusybox: prepare
 	      patch -p0 -i $${p}; \
 	    done; \
 	  popd; \
-	  cp $(OSDRV_DIR)/busybox/busybox-1.16.1/$(BUSYBOX_CFG) \
-	        $(OSDRV_DIR)/busybox/busybox-1.16.1/.config; \
 	fi
+	KCONFIG_ALLCONFIG=$(OSDRV_DIR)/busybox/busybox-1.16.1/$(BUSYBOX_CFG) \
+        make -C $(OSDRV_DIR)/busybox/busybox-1.16.1 \
+              ARCH=arm CROSS_COMPILE=$(OSDRV_CROSS)- allnoconfig; \
 	#find $(OSDRV_DIR)/busybox/busybox-1.16.1 | xargs touch
 	pushd $(OSDRV_DIR)/busybox/busybox-1.16.1/; \
 	  make -j $(NR_CPUS) >/dev/null 2>&1; \
