@@ -123,11 +123,16 @@ hiboot: prepare
 	  make ARCH=arm CROSS_COMPILE=$(OSDRV_CROSS)- \
 	        -j $(NR_CPUS) >/dev/null ; \
 	popd
-	cp $(OSDRV_DIR)/uboot/u-boot-2010.06/u-boot.bin $(OSDRV_DIR)/pub/$(PUB_IMAGE)
-	cp $(OSDRV_DIR)/tools/pc_tools/uboot_tools/mkboot.sh $(OSDRV_DIR)/pub/$(PUB_IMAGE)
-	cp $(OSDRV_DIR)/tools/pc_tools/uboot_tools/$(UBOOT_REG_BIN) $(OSDRV_DIR)/pub/$(PUB_IMAGE)
+	cp $(OSDRV_DIR)/uboot/u-boot-2010.06/u-boot.bin \
+	   $(OSDRV_DIR)/pub/$(PUB_IMAGE)
+	cp $(OSDRV_DIR)/tools/pc_tools/uboot_tools/mkboot.sh \
+	   $(OSDRV_DIR)/pub/$(PUB_IMAGE)
+	cp $(OSDRV_DIR)/tools/pc_tools/uboot_tools/$(UBOOT_REG_BIN) \
+	   $(OSDRV_DIR)/pub/$(PUB_IMAGE)
 	chmod 777 $(OSDRV_DIR)/pub/$(PUB_IMAGE)/mkboot.sh
-	pushd $(OSDRV_DIR)/pub/$(PUB_IMAGE);./mkboot.sh $(UBOOT_REG_BIN) $(UBOOT);popd
+	pushd $(OSDRV_DIR)/pub/$(PUB_IMAGE); \
+	  ./mkboot.sh $(UBOOT_REG_BIN) $(UBOOT); \
+	popd
 	rm $(OSDRV_DIR)/pub/$(PUB_IMAGE)/u-boot.bin
 	rm $(OSDRV_DIR)/pub/$(PUB_IMAGE)/mkboot.sh
 	rm $(OSDRV_DIR)/pub/$(PUB_IMAGE)/$(UBOOT_REG_BIN)
@@ -161,7 +166,8 @@ hikernel: prepare
 	  make ARCH=arm CROSS_COMPILE=$(OSDRV_CROSS)- uImage \
 	          -j $(NR_CPUS) 2>&1 >/dev/null; \
 	popd
-	cp $(OSDRV_DIR)/kernel/linux-3.0.y/arch/arm/boot/uImage $(OSDRV_DIR)/pub/$(PUB_IMAGE)/$(UIMAGE)
+	cp $(OSDRV_DIR)/kernel/linux-3.0.y/arch/arm/boot/uImage \
+	   $(OSDRV_DIR)/pub/$(PUB_IMAGE)/$(UIMAGE)
 
 hikernel_clean:
 	make clean -C $(OSDRV_DIR)/kernel/linux-3.0.y
@@ -188,7 +194,8 @@ hibusybox: prepare
 	@echo "---------task [4] build busybox "
 	#rm $(OSDRV_DIR)/busybox/busybox-1.16.1 -rf
 	if [ ! -d $(OSDRV_DIR)/busybox/busybox-1.16.1 ]; then \
-	  tar xzf $(OSDRV_DIR)/busybox/busybox-1.16.1.tgz -C $(OSDRV_DIR)/busybox; \
+	  tar xzf $(OSDRV_DIR)/busybox/busybox-1.16.1.tgz \
+	      -C $(OSDRV_DIR)/busybox; \
 	  pushd $(OSDRV_DIR)/busybox; \
 	    for p in $$(ls busybox-*.patch 2>/dev/null); do \
 	      patch -p0 -i $${p}; \
@@ -203,7 +210,8 @@ hibusybox: prepare
 	  make -j $(NR_CPUS) >/dev/null 2>&1; \
 	popd
 	make -C $(OSDRV_DIR)/busybox/busybox-1.16.1 install
-	cp -af $(OSDRV_DIR)/busybox/busybox-1.16.1/_install/* $(OSDRV_DIR)/pub/$(PUB_ROOTFS)
+	cp -af $(OSDRV_DIR)/busybox/busybox-1.16.1/_install/* \
+	       $(OSDRV_DIR)/pub/$(PUB_ROOTFS)
 
 hibusybox_clean:
 	make clean -C $(OSDRV_DIR)/busybox/busybox-1.16.1
@@ -214,21 +222,35 @@ hibusybox_clean:
 hipctools: prepare
 	@echo "---------task [5] build tools which run on pc"
 	make -C $(OSDRV_DIR)/tools/pc_tools/mkyaffs2image301
-	cp $(OSDRV_DIR)/tools/pc_tools/mkyaffs2image301/mkyaffs2image $(OSDRV_DIR)/pub/bin/pc
-	cp $(OSDRV_DIR)/tools/pc_tools/mkfs.jffs2 $(OSDRV_DIR)/pub/bin/pc
-	cp $(OSDRV_DIR)/tools/pc_tools/mkfs.cramfs $(OSDRV_DIR)/pub/bin/pc
-	cp $(OSDRV_DIR)/tools/pc_tools/mkimage $(OSDRV_DIR)/pub/bin/pc
-	pushd $(OSDRV_DIR)/tools/pc_tools/squashfs4.2;make;popd
-	cp $(OSDRV_DIR)/tools/pc_tools/squashfs4.2/mksquashfs $(OSDRV_DIR)/pub/bin/pc
-	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7;chmod 777 ./configure;popd
-	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7;./configure;popd
-	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7;make;popd
-	cp $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7/src/lzma/lzma $(OSDRV_DIR)/pub/bin/pc
+	cp $(OSDRV_DIR)/tools/pc_tools/mkyaffs2image301/mkyaffs2image \
+	   $(OSDRV_DIR)/pub/bin/pc
+	cp $(OSDRV_DIR)/tools/pc_tools/mkfs.jffs2 \
+	   $(OSDRV_DIR)/pub/bin/pc
+	cp $(OSDRV_DIR)/tools/pc_tools/mkfs.cramfs \
+	   $(OSDRV_DIR)/pub/bin/pc
+	cp $(OSDRV_DIR)/tools/pc_tools/mkimage \
+	   $(OSDRV_DIR)/pub/bin/pc
+	pushd $(OSDRV_DIR)/tools/pc_tools/squashfs4.2; make; popd
+	cp $(OSDRV_DIR)/tools/pc_tools/squashfs4.2/mksquashfs \
+	   $(OSDRV_DIR)/pub/bin/pc
+	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7; \
+	  chmod 777 ./configure; \
+	popd
+	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7; \
+	  ./configure; \
+	popd
+	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7; \
+	  make; \
+	popd
+	cp $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7/src/lzma/lzma \
+	   $(OSDRV_DIR)/pub/bin/pc
 
 hipctools_clean:
 	make -C $(OSDRV_DIR)/tools/pc_tools/mkyaffs2image301 clean
-	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7;chmod 777 ./configure;popd
-	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7;./configure >/dev/null;popd
+	pushd $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7; \
+	  chmod 777 ./configure; \
+	  ./configure >/dev/null; \
+	popd
 	make -C $(OSDRV_DIR)/tools/pc_tools/lzma-4.32.7 distclean >/dev/null
 	pushd $(OSDRV_DIR)/tools/pc_tools/squashfs4.2;make distclean;popd
 
@@ -240,24 +262,45 @@ hiboardtools: hirootfs_prepare hiboardtools_clean
 	@echo "---------task [6] build tools which run on board "
 	make -C $(OSDRV_DIR)/tools/board_tools/e2fsprogs
 	make -C $(OSDRV_DIR)/tools/board_tools/reg-tools-1.0.0
-	cp -af $(OSDRV_DIR)/tools/board_tools/reg-tools-1.0.0/btools $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/bin
-	cp -af $(OSDRV_DIR)/tools/board_tools/reg-tools-1.0.0/hi* $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/bin
+	cp -af $(OSDRV_DIR)/tools/board_tools/reg-tools-1.0.0/btools \
+	       $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/bin
+	cp -af $(OSDRV_DIR)/tools/board_tools/reg-tools-1.0.0/hi* \
+	       $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/bin
 	chmod 777 $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/static/himount
-	cp -af $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/static/himount $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/bin
-	cp -af $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/static/libhimount_api.a $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/lib
-	make -C $(OSDRV_DIR)/tools/board_tools/udev-100 rootfs_dir=$(PUB_ROOTFS)
-	cp $(OSDRV_DIR)/tools/board_tools/gdb/gdb-$(OSDRV_CROSS) $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)
-	find $(OSDRV_DIR)/tools/board_tools/mtd-utils/ -name 'configure' | xargs chmod +x
-	pushd $(OSDRV_DIR)/tools/board_tools/mtd-utils;make >/dev/null;popd
-	cp $(OSDRV_DIR)/tools/board_tools/mtd-utils/bin/arm/* $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)
+	cp -af $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/static/himount \
+	       $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/bin
+	cp -af $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/static/libhimount_api.a \
+	       $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/lib
+	make -C $(OSDRV_DIR)/tools/board_tools/udev-100 \
+	       rootfs_dir=$(PUB_ROOTFS)
+	cp $(OSDRV_DIR)/tools/board_tools/gdb/gdb-$(OSDRV_CROSS) \
+	       $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)
+	find $(OSDRV_DIR)/tools/board_tools/mtd-utils/ -name 'configure' \
+	       -exec chmod +x "{}" \;
+	pushd $(OSDRV_DIR)/tools/board_tools/mtd-utils; \
+	  make >/dev/null; \
+	popd
+	cp $(OSDRV_DIR)/tools/board_tools/mtd-utils/bin/arm/* \
+	   $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)
 	rm $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)/ubi*
-	cp $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/* $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)/hifat/ -af
+	cp $(OSDRV_DIR)/tools/board_tools/hifat/$(LIB_TYPE)/* \
+	   $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)/hifat/ -af
+	pushd $(OSDRV_DIR)/tools/board_tools/iupdate; \
+	  mkdir -p build-hi3518; \
+	  pushd build-hi3518; \
+	    ../configure --build=$${MACHTYPE} --host=$(OSDRV_CROSS) \
+	                 --prefix=/usr || exit 1; \
+	    make -j$(NR_CPUS) || exit 1; \
+	    make install DESTDIR=$(OSDRV_DIR)/pub/$(PUB_ROOTFS) || exit 1; \
+	  popd; \
+	popd
 
 hiboardtools_clean:
 	make -C $(OSDRV_DIR)/tools/board_tools/e2fsprogs clean
 	make -C $(OSDRV_DIR)/tools/board_tools/reg-tools-1.0.0 clean
 	make -C $(OSDRV_DIR)/tools/board_tools/udev-100 clean
 	pushd $(OSDRV_DIR)/tools/board_tools/mtd-utils;make distclean;popd
+	rm -rf $(OSDRV_DIR)/tools/board_tools/iupdate/build-hi3518; \
 
 
 ##########################################################################################
@@ -268,24 +311,38 @@ hirootfs_build: hibusybox hiboardtools hirootfs_prepare hipctools
 	chmod 777 $(OSDRV_DIR)/pub/bin/$(PUB_BOARD)/*
 	chmod 777 $(OSDRV_DIR)/pub/bin/pc/*
 	rm $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/dev/* -rf
-#	mknod $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/dev/console c 5 1
-#	mknod $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/dev/ttyAMA0 c 204 64
-#	mknod $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/dev/ttyAMA1 c 204 65
-#	mknod $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/dev/ttyS000 c 204 64
-	find $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/ -name \*.so\* -a -type f -exec $(OSDRV_CROSS)-strip -s "{}" \;
-	pushd $(OSDRV_DIR)/pub/$(PUB_ROOTFS);ln -s sbin/init init;popd
+	pushd $(OSDRV_DIR)/pub/$(PUB_ROOTFS); \
+	  ln -s sbin/init init; \
+	popd
 
-# [!]	If you're building rootfs of minimized-configuration version, it is highly recommended to uncomment the following line.
+# [!]	If you're building rootfs of minimized-configuration version, 
+#       it is highly recommended to uncomment the following line.
 #	pushd $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/lib/;$(OSDRV_CROSS)-strip *;popd
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mkfs.jffs2 -d $(OSDRV_DIR)/pub/$(PUB_ROOTFS) -l -e 0x40000 -o $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_256k.jffs2;popd
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mkfs.jffs2 -d $(OSDRV_DIR)/pub/$(PUB_ROOTFS) -l -e 0x20000 -o $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_128k.jffs2;popd
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mkfs.jffs2 -d $(OSDRV_DIR)/pub/$(PUB_ROOTFS) -l -e 0x10000 -o $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_64k.jffs2;popd
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mksquashfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS) $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_256k.squashfs -b 256K -comp xz;popd
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mksquashfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS) $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_128k.squashfs -b 128K -comp xz;popd
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mksquashfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS) $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_64k.squashfs -b 64K -comp xz;popd
+	find $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/ -type f -a -executable \
+	    -exec $(OSDRV_CROSS)-strip -s "{}" \;
+	pushd $(OSDRV_DIR)/pub/bin/pc; \
+	  ./mkfs.jffs2 -d $(OSDRV_DIR)/pub/$(PUB_ROOTFS) -l -e 0x40000 \
+	               -o $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_256k.jffs2; \
+	  ./mkfs.jffs2 -d $(OSDRV_DIR)/pub/$(PUB_ROOTFS) -l -e 0x20000 \
+	               -o $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_128k.jffs2; \
+	  ./mkfs.jffs2 -d $(OSDRV_DIR)/pub/$(PUB_ROOTFS) -l -e 0x10000 \
+	               -o $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_64k.jffs2; \
+	  ./mksquashfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS) \
+	               $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_256k.squashfs \
+		       -b 256K -comp xz; \
+	  ./mksquashfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS) \
+	               $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_128k.squashfs \
+		       -b 128K -comp xz; \
+	  ./mksquashfs $(OSDRV_DIR)/pub/$(PUB_ROOTFS) \
+	               $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_64k.squashfs \
+		       -b 64K -comp xz; \
+	popd
 	@if [ "$(CHIP)" = "hi3518a" -o "$(CHIP)" = "hi3516c" ];then \
-	pushd $(OSDRV_DIR)/pub/bin/pc;./mkyaffs2image $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/ $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_2k_1bit.yaffs2 1 1;popd; \
-	chmod 644 $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_2k_1bit.yaffs2; \
+	  pushd $(OSDRV_DIR)/pub/bin/pc; \
+	    ./mkyaffs2image $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/ \
+	          $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_2k_1bit.yaffs2 1 1; \
+	  popd; \
+	  chmod 644 $(OSDRV_DIR)/pub/$(PUB_IMAGE)/rootfs_2k_1bit.yaffs2; \
 	fi
 	find $(OSDRV_DIR)/pub/$(PUB_ROOTFS)/ -name '*svn' | xargs rm -rf
 	pushd $(OSDRV_DIR)/pub;tar czf $(PUB_ROOTFS).tgz $(PUB_ROOTFS);popd

@@ -1,0 +1,3 @@
+[submodule "tools/board_tools/iupdate"]
+	path = tools/board_tools/iupdate
+	url = https://github.com/TangCheng/iupdate.git
