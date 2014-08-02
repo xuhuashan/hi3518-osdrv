@@ -30,13 +30,17 @@ for t in ${parttype}; do
   fi
 done
 
-if [ x"$mount_ok" != "xyes" ]; then
-  echo "WARN: mount application partition failed." >&2
-  exit 1;
-fi
-
-## run /etc/rc script in this partition
+## run etc/rc script in this partition
+init_ok=no
 if [ -x ${appmnt}/etc/rc ]; then
-  ${appmnt}/etc/rc
+  if ${appmnt}/etc/rc; then
+    init_ok=true
+  fi
 fi
 
+if [ x"$mount_ok" != "xyes" -o x"$init_ok" != "xyes" ]; then
+  echo -e "\033[31;1mENTER DOWNLOAD MODE\033[0m"
+  ## start tftp server to upgrade the firmware
+  /usr/bin/udpsvd -vE 0 69 /usr/bin/tftpd -c /var/cache/firmware &
+  exit 1
+fi

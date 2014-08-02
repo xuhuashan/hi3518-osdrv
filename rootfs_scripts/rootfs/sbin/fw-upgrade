@@ -1,0 +1,97 @@
+#!/bin/sh
+
+evt=$1
+fw_dir=$2
+evt_file=$3
+
+act_file="upgrade-start"
+fw_file="${fw_dir}/firmware-hi3518.bin"
+lock_file="${fw_dir}/firmware-lock"
+
+warn() {
+  echo -e "\033[34;1mWARNING: $*\033[0m"
+}
+
+fatal() {
+  echo -e "\033[31;1mFATAL: $*\033[0m"
+}
+
+## start when act_file is download
+if ! [ x"${evt}" = "xw" \
+    -a x"${evt_file}" = x"${act_file}" ];
+then
+  exit 0
+fi
+
+if [ -f "${lock_file}" ]; then
+  warn "Upgrade is processing"
+  exit 0
+fi
+
+## delete lock_file on signal 0/1/2/3/6/9/15
+trap "rm -f ${lock_file}; exit 1" 0 1 2 3 6 9 15
+touch $lock_file || exit 1
+
+## check if the firmware file exists
+if ! [ -f "${fw_file}" ]; then
+  fatal "Firmware file not found"
+  exit 1
+fi
+
+## extract the firmware
+echo -e "\033[1mExtracting the firmware...\033[0m"
+if ! fw_decode -d ${fw_dir}/files ${fw_file}; then
+  fatal "Extract firmware failed"
+  exit 1
+fi
+
+get_mtddev_from_name() {
+  mtdnr=$(grep -E "\"$1\"" /proc/mtd \
+        | grep -E -o '^mtd[0-9]{1,2}' \
+        | cut -b 4-)
+  if [ x"${mtdnr}" = "x" ]; then
+    warn "partition '$f' does not exists, ignore."
+    return 1;
+  fi
+  mtdcdev="/dev/mtd${mtdnr}"
+  mtdbdev="/dev/mtdblock${mtdnr}"
+  ## check the device
+  if ! [ -c $mtdcdev -a -b $mtdbdev ]; then
+    warn "MTD device ${mtdcdev}-${mtdbdev} does not exist"
+    return 1;
+  fi
+  ## if filesystem is in-use, umount it first
+  if grep "$mtdbdev" /proc/mounts; then
+    local ignore=
+    local mpoint=
+    read ignore mpoint ignore << EOF
+      $(grep -E "${mtdbdev}" /proc/mounts)
+EOF
+    if [ x"$mpoint" != "x" ]; then
+      fuser -km $mpoint
+      umount $mpoint
+    fi
+  fi
+  return 0
+}
+
+## program every partition
+for f in $(ls ${fw_dir}/files); do
+  if ! get_mtddev_from_name $f; then
+    continue
+  fi
+  if [ -c ${mtdcdev} ]; then
+    echo -e "\033[1mPrograming partition '${f}' to '${mtdcdev}'...\033[0m"
+    flash_eraseall ${mtdcdev}
+    flashcp -v ${fw_dir}/files/$f ${mtdcdev}
+  else
+    warn "partition '$f' is not a valid character device"
+    continue
+  fi
+done
+
+## program OK, reboot the system.
+echo -e "\033[32;1mUpgrade complete, now rebooting system...\033[0m"
+sleep 1
+reboot
+

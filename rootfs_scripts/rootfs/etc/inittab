@@ -56,6 +56,8 @@
 ::sysinit:/etc/init.d/rcS
 ::sysinit:/bin/mkdir /dev/shm
 
+::respawn:/sbin/inotifyd /sbin/fw-upgrade /var/cache/firmware
+
 # /bin/sh invocations on selected ttys
 #
 # Note below that we prefix the shell commands with a "-" to indicate to the

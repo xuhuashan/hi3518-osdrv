@@ -15,3 +15,4 @@ dir /tmp 0777 0 0
 dir /var 0755 0 0
 dir /var/run 0755 0 0
 dir /var/cache 0755 0 0
+dir /var/cache/firmware 0755 0 0
